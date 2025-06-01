@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Rössle - Tuttlingen</title>
+    <style>
+        /* Allgemeine Stile (bleiben größtenteils gleich) */
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.7;
+            color: #34495e;
+            background-color: #f8f9fa;
+            font-size: 16px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+            overflow: hidden;
+            padding: 25px 0;
+        }
+
+        h1, h2, h3 {
+            color: #2c3e50;
+            margin-bottom: 0.75em;
+        }
+
+        h1 { /* H1 Größe wird spezifischer im Hero-Text angepasst */
+            font-size: 2.5em; 
+        }
+
+        h2 {
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 35px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #e74c3c;
+        }
+
+        p {
+            margin-bottom: 1em;
+            font-size: 1.05em;
+        }
+
+        a {
+            text-decoration: none;
+            color: #e74c3c;
+            transition: color 0.3s ease;
+        }
+        a:hover {
+            color: #c0392b;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+        }
+
+        /* Header & Navigation (bleibt gleich) */
+        header {
+            background: #2c3e50;
+            color: #fff;
+            padding-top: 0; 
+            min-height: 70px; 
+            border-bottom: #e74c3c 4px solid;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+        }
+
+        header nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 25px;
+            height: 70px; 
+        }
+
+        header .logo a {
+            color: #fff;
+            font-size: 1.7em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            z-index: 1001; 
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001;
+        }
+
+        .hamburger-icon {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: #fff;
+            position: relative;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .hamburger-icon::before,
+        .hamburger-icon::after {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 3px;
+            background-color: #fff;
+            position: absolute;
+            left: 0;
+            transition: transform 0.3s ease-in-out, top 0.3s ease-in-out;
+        }
+
+        .hamburger-icon::before { top: -8px; }
+        .hamburger-icon::after { top: 8px; }
+
+        .menu-toggle.active .hamburger-icon { background-color: transparent; }
+        .menu-toggle.active .hamburger-icon::before { transform: rotate(45deg); top: 0; }
+        .menu-toggle.active .hamburger-icon::after { transform: rotate(-45deg); top: 0; }
+
+        .nav-links {
+            display: flex; list-style: none; margin: 0; padding: 0; align-items: center;
+        }
+        .nav-links li { margin-left: 25px; }
+        .nav-links a { 
+            color: #ecf0f1; font-weight: 500; padding: 5px 0;
+            border-bottom: 2px solid transparent;
+            transition: border-bottom-color 0.3s ease, color 0.3s ease; display: block;
+        }
+        .nav-links a:hover, .nav-links a.active-link { color: #fff; border-bottom-color: #e74c3c; }
+        
+        .nav-links .nav-cta-button { 
+            background: #e74c3c; color: #fff !important; padding: 10px 20px !important;
+            border-radius: 5px; font-weight: bold; text-transform: uppercase;
+            letter-spacing: 0.5px; transition: background-color 0.3s ease, transform 0.2s ease;
+            border-bottom: none !important; 
+        }
+        .nav-links .nav-cta-button:hover {
+            background: #c0392b; transform: translateY(-2px);
+            color: #fff !important; border-bottom: none !important;
+        }
+
+        /* Slideshow Hero Section */
+        .slideshow-container {
+            width: 100%; /* Nimmt volle Breite ein */
+            height: 350px; /* Ihre gewünschte Höhe */
+            position: relative;
+            margin: 0 auto; /* Kein vertikaler Margin, schließt an Header an */
+            overflow: hidden; /* Verhindert, dass übergroße Inhalte Probleme machen */
+        }
+
+        .slide {
+            display: none; /* Standardmäßig alle Slides versteckt */
+            width: 100%;
+            height: 100%;
+            text-align: center; /* Für den Fall, dass Text direkt im Slide ist */
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%; /* Nimmt die Höhe des .slide-Containers ein (also 350px) */
+            object-fit: cover; /* Bild füllt den Bereich, kann beschnitten werden, um Seitenverhältnis zu wahren */
+            display: block;
+            border-radius: 0; /* Keine abgerundeten Ecken für Hero-Bilder */
+        }
+        
+        /* Text-Overlay für Hero-Slides */
+        .hero-text-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5; /* Über dem Bild, unter den Nav-Pfeilen */
+            color: #fff;
+            text-align: center;
+            padding: 20px 30px;
+            background-color: rgba(0, 0, 0, 0.45); /* Halbtransparenter Hintergrund für bessere Lesbarkeit */
+            border-radius: 8px;
+            width: 80%; /* Begrenzt die Breite des Textfeldes */
+            max-width: 700px; /* Maximale Breite des Textfeldes */
+        }
+
+        .hero-text-overlay h1 {
+            font-size: clamp(1.8em, 4vw, 3.0em); /* Responsive Schriftgröße */
+            margin-bottom: 15px;
+            color: #fff;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+            line-height: 1.2;
+        }
+
+        .hero-text-overlay p {
+            font-size: clamp(1em, 2.2vw, 1.3em); /* Responsive Schriftgröße */
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
+        }
+
+        .cta-button-hero { /* Bleibt wie zuvor, aber wird im hero-text-overlay verwendet */
+            background: #e74c3c;
+            color: #fff !important; /* Überschreibt generische a-Farbe */
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-size: clamp(0.9em, 1.8vw, 1.1em);
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            display: inline-block; /* Damit Padding korrekt angewendet wird */
+        }
+        .cta-button-hero:hover {
+            background: #c0392b;
+            color: #fff !important;
+            transform: translateY(-2px) scale(1.03);
+        }
+
+        /* Navigation Arrows for Slideshow */
+        .slideshow-prev, .slideshow-next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            padding: 16px;
+            margin-top: -22px; /* Vertikal zentrieren */
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            transition: 0.3s ease;
+            border-radius: 0 3px 3px 0;
+            user-select: none; /* Verhindert Textauswahl */
+            background-color: rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+        .slideshow-next {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+        .slideshow-prev:hover, .slideshow-next:hover {
+            background-color: rgba(0,0,0,0.6);
+        }
+
+        /* Dots for Slideshow Navigation */
+        .dots-container {
+            text-align: center;
+            position: absolute;
+            bottom: 15px;
+            width: 100%;
+            z-index: 10;
+        }
+        .dot {
+            cursor: pointer;
+            height: 13px;
+            width: 13px;
+            margin: 0 4px;
+            background-color: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(0,0,0,0.2);
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+        .dot.active, .dot:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-color: rgba(0,0,0,0.5);
+        }
+
+        /* Fading animation */
+        .fade {
+            animation-name: fade;
+            animation-duration: 1.5s;
+        }
+        @keyframes fade {
+            from {opacity: .4} 
+            to {opacity: 1}
+        }
+
+
+        /* Sections Allgemein (bleibt gleich) */
+        main section {
+            padding: 50px 20px;
+            background-color: #fff;
+            margin-bottom: 0;
+        }
+        main section:nth-child(even){
+            background-color: #f8f9fa;
+        }
+        /* Bild-Platzhalter usw. bleiben gleich */
+        img[src^="images/"] { 
+            background-color: #e0e0e0; 
+            color: #757575; text-align: center; display: flex;
+            align-items: center; justify-content: center;
+            font-style: italic; min-height: 200px; border-radius: 8px;
+        }
+        img[src^="images/"]::after {
+            content: "Bild: " attr(alt); padding: 10px; font-size: 0.9em;
+        }
+         /* Spezifische Anpassungen für Bildgrössen falls nötig (Bsp: Über Uns) */
+        #ueber-uns img { max-height: 400px; object-fit: cover; margin: 25px auto; }
+
+
+        /* Zimmer Galerie, Freizeit Galerie, CTA Section, Footer etc. bleiben gleich wie vorher */
+        /* (Stile für .zimmer-galerie, .zimmer-karte, .freizeit-galerie, .freizeit-karte etc. hier einfügen) */
+         .zimmer-galerie, .freizeit-galerie {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            justify-content: center;
+        }
+
+        .zimmer-karte, .freizeit-karte {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .zimmer-karte:hover, .freizeit-karte:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+        }
+
+        .zimmer-karte img { width: 100%; height: 220px; object-fit: cover; border-radius: 0; }
+        .freizeit-karte img { width: 100%; height: 180px; object-fit: cover; border-radius: 0;}
+        
+        .zimmer-karte-content, .freizeit-karte-content { padding: 15px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;}
+        .zimmer-karte h3 { margin: 0 0 10px; font-size: 1.35em; color: #3498db; }
+        .freizeit-karte h3 { margin: 0 0 10px; font-size: 1.3em; color: #27ae60; }
+        
+        .zimmer-karte p, .freizeit-karte p { font-size: 1em; color: #555; margin-bottom: 15px; flex-grow: 1; }
+        .freizeit-karte .info-rezeption { font-size: 0.85em; color: #7f8c8d; margin-top: auto; margin-bottom: 10px; }
+
+        .cta-button-small { background: #5cb85c; color: #fff !important; padding: 10px 18px; border-radius: 5px; font-weight: bold; display: inline-block; margin: 0 15px 10px; transition: background-color 0.3s ease; }
+        .cta-button-small:hover { background: #4cae4c; color: #fff !important; }
+        .freizeit-karte .link-webseite { background: #3498db; color: #fff !important; padding: 8px 15px; border-radius: 5px; font-weight: bold; display: inline-block; transition: background-color 0.3s ease; font-size: 0.9em; }
+        .freizeit-karte .link-webseite:hover { background: #2980b9; color: #fff !important; }
+
+        .cta-section { background-color: #2c3e50; color: #fff; text-align: center; padding: 60px 20px; }
+        .cta-section h2 { color: #fff; border-bottom-color: #e74c3c; }
+        .cta-section p { font-size: 1.15em; margin-bottom: 35px; max-width: 650px; margin-left: auto; margin-right: auto; }
+        .cta-button-prominent, .cta-button-secondary { padding: 16px 36px; font-size: 1.2em; border-radius: 6px; font-weight: bold; margin: 10px 5px; display: inline-block; min-width: 220px; box-sizing: border-box; }
+        .cta-button-prominent { background: #e74c3c; color: #fff !important; transition: background-color 0.3s ease, transform 0.3s ease; }
+        .cta-button-prominent:hover { background: #c0392b; transform: scale(1.05); color: #fff !important; }
+        .cta-button-secondary { background: transparent; color: #fff !important; border: 2px solid #fff; transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease; }
+        .cta-button-secondary:hover { background: #fff; color: #2c3e50 !important; transform: scale(1.05); }
+
+        footer { background: #1c2833; color: #bdc3c7; text-align: center; padding: 40px 20px; margin-top: 0; }
+        footer p { margin: 8px 0; font-size: 0.95em; }
+        footer a { color: #e74c3c; }
+        footer a:hover { color: #fff; }
+
+
+        /* ---- Responsive Design Anpassungen ---- */
+        @media(min-width: 769px) { 
+            /* .hero h1 { font-size: 3.5em; } -> Wird nun durch hero-text-overlay gesteuert */
+            /* .hero p { font-size: 1.4em; }  -> Wird nun durch hero-text-overlay gesteuert */
+        }
+
+        @media (max-width: 1024px) { 
+            .container { width: 90%; }
+            header nav { padding: 0 20px; }
+            .hero-text-overlay { width: 85%; padding: 15px 20px; }
+        }
+        
+        @media (max-width: 768px) { /* Mobile Menu Breakpoint */
+            .menu-toggle { display: block; }
+            .nav-links { display: none; flex-direction: column; position: absolute; top: 70px; left: 0; width: 100%; background-color: #2c3e50; padding: 15px 0; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); border-top: 1px solid #4a6277; }
+            .nav-links.menu-open { display: flex; }
+            .nav-links li { margin: 0; width: 100%; text-align: center; }
+            .nav-links a {  padding: 15px 20px; width: 100%; box-sizing: border-box; border-bottom: 1px solid #4a6277; }
+            .nav-links a:hover, .nav-links a.active-link { background-color: rgba(255,255,255,0.05); border-bottom-color: #4a6277; color: #e74c3c; }
+            .nav-links li:last-child a { border-bottom: none; }
+            .nav-links .nav-cta-button { background: transparent; color: #e74c3c !important; font-weight: bold; padding: 15px 20px !important; margin: 0; border: none; display: block; width: 100%; text-transform: none; }
+            .nav-links .nav-cta-button:hover { background: rgba(231, 76, 60, 0.1); color: #c0392b !important; transform: none; }
+
+            /* Weitere Responsive Anpassungen */
+            body { font-size: 15px; }
+            
+            .slideshow-container { height: 300px; } /* Höhe auf Mobilgeräten ggf. anpassen */
+            .hero-text-overlay { width: 90%; padding: 10px 15px;}
+            .hero-text-overlay h1 { font-size: 1.6em; }
+            .hero-text-overlay p { font-size: 0.9em; margin-bottom: 20px;}
+            .cta-button-hero { padding: 12px 25px; font-size: 0.85em;}
+            .slideshow-prev, .slideshow-next { font-size: 18px; padding: 12px;}
+            .dot { height: 10px; width: 10px;}
+
+
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.7em; margin-bottom: 25px; padding-bottom: 12px; }
+            .zimmer-galerie, .freizeit-galerie { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+            .cta-section { padding: 40px 15px; }
+            .cta-section h2 { font-size: 1.6em; }
+            .cta-section p { font-size: 1.05em; }
+            .cta-button-prominent, .cta-button-secondary { display: block; width: 90%; max-width: 300px; margin: 12px auto; font-size: 1.1em; padding: 14px 20px; }
+            .container { width: 95%; }
+        }
+
+        @media (max-width: 480px) { /* Kleinere Smartphones */
+            body { font-size: 14px; }
+            header .logo a { font-size: 1.5em; }
+            
+            .slideshow-container { height: 250px; } /* Weitere Anpassung der Höhe */
+            .hero-text-overlay h1 { font-size: 1.4em; }
+            .hero-text-overlay p { font-size: 0.85em; margin-bottom: 15px; }
+            .cta-button-hero { padding: 10px 20px; font-size: 0.8em; }
+
+            h1 { font-size: 1.7em; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+            .zimmer-galerie, .freizeit-galerie { grid-template-columns: 1fr; gap: 15px; } 
+            .zimmer-karte img { height: 180px; }
+            .freizeit-karte img { height: 160px; }
+            main section { padding: 30px 15px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo"> <a href="#">Hotel Rössle</a> </div>
+            <button class="menu-toggle" id="mobile-menu" aria-label="Menü öffnen/schließen" aria-expanded="false">
+                <span class="hamburger-icon"></span>
+            </button>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#zimmer" class="nav-link">Zimmer & Preise</a></li>
+                <li><a href="#restaurant" class="nav-link">Restaurant</a></li>
+                <li><a href="#events" class="nav-link">Events & Räumlichkeiten</a></li>
+                <li><a href="#freizeit" class="nav-link">Freizeit</a></li>
+                <li><a href="#kontakt" class="nav-link">Kontakt & Anfahrt</a></li>
+                <li><a href="#buchung" class="nav-cta-button">Jetzt Buchen</a></li> 
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Slideshow Hero anstelle des alten Hero-Divs -->
+        <div class="slideshow-container">
+            <div class="slide fade">
+                <img src="images/home_hotelroessle.jpg" alt="Atmosphärisches Hotelambiente">
+                <div class="hero-text-overlay">
+                    <h1>Willkommen im Hotel Rössle</h1>
+                    <p>Ihr Zuhause in Tuttlingen – Tradition trifft Moderne.</p>
+                    <a href="#zimmer" class="cta-button-hero">Unsere Zimmer entdecken</a>
+                </div>
+            </div>
+            <div class="slide fade">
+                <img src="images/home_roessle3.jpg" alt="Komfortables Zimmer im Hotel Rössle">
+                 <div class="hero-text-overlay">
+                    <h1>Komfort & Gemütlichkeit</h1>
+                    <p>Entspannen Sie in unseren liebevoll eingerichteten Zimmern.</p>
+                    <a href="#zimmer" class="cta-button-hero">Zimmer ansehen</a>
+                </div>
+            </div>
+            <div class="slide fade">
+                <img src="images/home_roessle5.jpg" alt="Umgebung von Tuttlingen - Donaulandschaft">
+                <div class="hero-text-overlay">
+                    <h1>Tuttlingen & Region entdecken</h1>
+                    <p>Der ideale Ausgangspunkt für Ihre Abenteuer in der Natur.</p>
+                    <a href="#freizeit" class="cta-button-hero">Freizeitaktivitäten</a>
+                </div>
+            </div>
+
+            <a class="slideshow-prev" onclick="plusSlides(-1)">&#10094;</a>
+            <a class="slideshow-next" onclick="plusSlides(1)">&#10095;</a>
+
+            <div class="dots-container">
+                <span class="dot" onclick="currentSlide(1)"></span>
+                <span class="dot" onclick="currentSlide(2)"></span>
+                <span class="dot" onclick="currentSlide(3)"></span>
+            </div>
+        </div>
+
+        <section id="ueber-uns" class="container">
+            <h2>Über Uns</h2>
+            <p>Seit vielen Jahren legen wir im Hotel Rössle größten Wert auf die Zufriedenheit unserer Gäste. Bei uns ist der Gast König! Erleben Sie herzliche Gastfreundschaft in familiärer Atmosphäre, zentral gelegen in Tuttlingen. Wir freuen uns auf Ihren Besuch und wünschen Ihnen einen angenehmen Aufenthalt.</p>
+            <img src="images/hotel_aussenansicht.jpg" alt="Außenansicht Hotel Rössle">
+        </section>
+
+        <!-- Restliche Sektionen (Zimmer, Restaurant, Events, Freizeit, Kontakt, Buchung) bleiben wie zuvor -->
+        <!-- (Hier den Code der vorherigen Version für die Sektionen einfügen) -->
+        <section id="zimmer" class="container">
+            <h2>Wohnen & Preise</h2>
+            <p>Entdecken Sie unsere komfortablen Zimmer. Jedes Zimmer ist ausgestattet mit [Beispiel: Dusche/WC, TV, kostenfreiem WLAN].</p>
+            <div class="zimmer-galerie">
+                <div class="zimmer-karte"> <img src="images/zimmer_einzel.jpg" alt="Beispiel Einzelzimmer"> <div class="zimmer-karte-content"><h3>Einzelzimmer Standard</h3> <p>Ab 70€ / Nacht</p> <a href="#buchung" class="cta-button-small">Details & Buchen</a></div></div>
+                <div class="zimmer-karte"> <img src="images/zimmer_doppel.jpg" alt="Beispiel Doppelzimmer"> <div class="zimmer-karte-content"><h3>Doppelzimmer Komfort</h3> <p>Ab 95€ / Nacht</p> <a href="#buchung" class="cta-button-small">Details & Buchen</a></div></div>
+                <div class="zimmer-karte"> <img src="images/zimmer_suite.jpg" alt="Beispiel Suite"> <div class="zimmer-karte-content"><h3>Suite</h3> <p>Ab 130€ / Nacht</p> <a href="#buchung" class="cta-button-small">Details & Buchen</a></div></div>
+            </div>
+        </section>
+        <section id="restaurant" class="container">
+            <h2>Restaurant & Genuss</h2>
+            <p>Starten Sie perfekt in den Tag mit unserem reichhaltigen Frühstücksbuffet. Am Abend verwöhnen wir Sie gerne in unserem [Restaurantname, falls vorhanden, sonst anpassen oder entfernen] mit regionalen Spezialitäten.</p>
+            <img src="images/restaurant_ambiente.jpg" alt="Ambiente im Restaurant Hotel Rössle">
+        </section>
+        <section id="events" class="container">
+            <h2>Events & Räumlichkeiten</h2>
+            <p>Planen Sie eine Feier oder Tagung? Unsere flexiblen Räumlichkeiten bieten den idealen Rahmen für Ihre Veranstaltung. Kontaktieren Sie uns für ein individuelles Angebot.</p>
+             <img src="images/veranstaltungsraum.jpg" alt="Veranstaltungsraum Hotel Rössle">
+        </section>
+        <section id="freizeit" class="container">
+            <h2>Freizeit in Tuttlingen & Umgebung</h2>
+            <p>Entdecken Sie die vielfältigen Freizeitmöglichkeiten rund um das Hotel Rössle. Tuttlingen und die beeindruckende Natur der Schwäbischen Alb bieten für jeden Geschmack das Richtige.</p>
+            <div class="freizeit-galerie">
+                <div class="freizeit-karte"><img src="images/freizeit_donauversinkung.jpg" alt="Donauversinkung"><div class="freizeit-karte-content"><h3>Donauversinkung</h3><p>Ein einzigartiges Naturschauspiel bei Immendingen.</p><p class="info-rezeption">Infos an der Rezeption.</p></div></div>
+                <div class="freizeit-karte"><img src="images/freizeit_honberg.jpg" alt="Burgruine Honberg"><div class="freizeit-karte-content"><h3>Burgruine Honberg</h3><p>Wahrzeichen Tuttlingens mit toller Aussicht.</p><p class="info-rezeption">Infos an der Rezeption.</p></div></div>
+                <div class="freizeit-karte"><img src="images/freizeit_tuwass.jpg" alt="Freizeitbad TuWass"><div class="freizeit-karte-content"><h3>Freizeitbad TuWass</h3><p>Badespaß für die ganze Familie.</p><a href="https://www.tuwass.de/" class="link-webseite" target="_blank" rel="noopener">Zur Webseite</a></div></div>
+                <div class="freizeit-karte"><img src="images/freizeit_freilichtmuseum.jpg" alt="Freilichtmuseum Neuhausen"><div class="freizeit-karte-content"><h3>Freilichtmuseum Neuhausen</h3><p>Zeitreise in das Landleben von einst.</p><a href="https://freilichtmuseum-neuhausen.de/" class="link-webseite" target="_blank" rel="noopener">Zur Webseite</a></div></div>
+            </div>
+        </section>
+        <section id="kontakt" class="container">
+            <h2>Kontakt & Anfahrt</h2>
+            <p><strong>Hotel Rössle</strong><br>Osman Kücük<br>Honbergstrasse 8<br>78532 Tuttlingen<br>Deutschland<br>Telefon: +49 (0)7461 2913<br>Fax: +49 (0)7461 9697524<br>E-Mail: info@hotelroessle.eu</p>
+        </section>
+         <section id="buchung" class="container cta-section">
+            <h2>Bereit für Ihren Aufenthalt?</h2>
+            <p>Prüfen Sie Verfügbarkeiten und buchen Sie Ihr Zimmer direkt online oder senden Sie uns eine unverbindliche Anfrage.</p>
+            <a href="#" class="cta-button-prominent">Online Buchen</a> 
+            <a href="mailto:info@hotelroessle.eu" class="cta-button-secondary">Anfrage Senden</a>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Hotel Rössle. Alle Rechte vorbehalten. | <a href="#impressum-modal">Impressum</a> | <a href="#datenschutz-modal">Datenschutz</a></p>
+            <p>Mitglied im DEHOGA</p>
+        </div>
+    </footer>
+
+    <script>
+        // Hamburger Menü Script (bleibt gleich)
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('mobile-menu');
+            const navLinks = document.getElementById('nav-links');
+            const allNavLinksInMenu = navLinks.querySelectorAll('a'); 
+
+            if (menuToggle && navLinks) {
+                menuToggle.addEventListener('click', function() {
+                    navLinks.classList.toggle('menu-open');
+                    const isExpanded = navLinks.classList.contains('menu-open');
+                    menuToggle.setAttribute('aria-expanded', isExpanded);
+                    menuToggle.classList.toggle('active'); 
+                });
+            }
+
+            allNavLinksInMenu.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (navLinks.classList.contains('menu-open')) {
+                        navLinks.classList.remove('menu-open');
+                        menuToggle.classList.remove('active');
+                        menuToggle.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            });
+
+            document.addEventListener('click', function(event) {
+                const isClickInsideNav = navLinks.contains(event.target);
+                const isClickOnToggle = menuToggle.contains(event.target);
+
+                if (!isClickInsideNav && !isClickOnToggle && navLinks.classList.contains('menu-open')) {
+                    navLinks.classList.remove('menu-open');
+                    menuToggle.classList.remove('active');
+                    menuToggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+        });
+
+        // Slideshow Script
+        let slideIndex = 1;
+        let slideshowTimer; // Variable für den Timer
+
+        showSlides(slideIndex);
+        startSlideshowTimer(); // Startet den automatischen Wechsel
+
+        // Funktion, um den automatischen Wechsel zu starten/neu zu starten
+        function startSlideshowTimer() {
+            clearTimeout(slideshowTimer); // Bestehenden Timer löschen
+            slideshowTimer = setTimeout(function() { 
+                plusSlides(1); // Nächstes Bild anzeigen
+            }, 5000); // Bildwechsel alle 5 Sekunden (5000 Millisekunden)
+        }
+
+        function plusSlides(n) {
+            showSlides(slideIndex += n);
+            startSlideshowTimer(); // Timer nach manuellem Wechsel neu starten
+        }
+
+        function currentSlide(n) {
+            showSlides(slideIndex = n);
+            startSlideshowTimer(); // Timer nach manuellem Wechsel neu starten
+        }
+
+        function showSlides(n) {
+            let i;
+            let slides = document.getElementsByClassName("slide");
+            let dots = document.getElementsByClassName("dot");
+            if (slides.length === 0 || dots.length === 0) return; // Beenden, wenn keine Slides/Dots da sind
+
+            if (n > slides.length) {slideIndex = 1}    
+            if (n < 1) {slideIndex = slides.length}
+            
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";  
+            }
+            for (i = 0; i < dots.length; i++) {
+                dots[i].className = dots[i].className.replace(" active", "");
+            }
+            
+            slides[slideIndex-1].style.display = "block";  
+            dots[slideIndex-1].className += " active";
+        }
+    </script>
+</body>
+</html>
